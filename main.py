@@ -9,15 +9,18 @@ from random import randint
 from SORT import *
 
 
-model = YOLO("yolov8s-seg.pt")
+model = YOLO("cokebest.pt")
 
-with open("ultralytics/yolo/data/datasets/coco8-seg.yaml", "r") as stream:
-    try:
-        datasets = yaml.safe_load(stream)
-        datasets_names = datasets['names']
-    except:
-        print("No file found")
-        datasets_names = ""
+# For coco
+# with open("ultralytics/yolo/data/datasets/coco8-seg.yaml", "r") as stream:
+#     try:
+#         datasets = yaml.safe_load(stream)
+#         datasets_names = datasets['names']
+#     except:
+#         print("No file found")
+#         datasets_names = ""
+
+datasets_names = {0: "coke"}
 
 
 def init_tracker():
