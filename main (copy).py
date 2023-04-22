@@ -9,7 +9,7 @@ from random import randint
 from ultralytics.SORT import *
 
 
-model = YOLO("textdetv2.pt")
+model = YOLO("robotextv2.pt")
 
 # For coco
 # with open("ultralytics/yolo/data/datasets/coco8-seg.yaml", "r") as stream:
@@ -26,7 +26,7 @@ datasets_names = {0: "text"}
 def init_tracker():
     global tracker
     sort_max_age = 10
-    sort_min_hits = 3
+    sort_min_hits = 5
     sort_iou_thresh = 0.2
     tracker = Sort(max_age=sort_max_age, min_hits=sort_min_hits,
                    iou_threshold=sort_iou_thresh)
@@ -54,8 +54,8 @@ while cap.isOpened():
         print("Error")
         continue
 
-    cv2.putText(frame, "fps: " + str(round(1 / (time.time() - start), 2)), (10, int(cap.get(4)) - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    #cv2.putText(frame, "fps: " + str(round(1 / (time.time() - start), 2)), (10, int(cap.get(4)) - 10),
+     #           cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
     # print("fps: " + str(round(1 / (time.time() - start), 2)))
     start = time.time()
     frame2 = np.copy(frame)

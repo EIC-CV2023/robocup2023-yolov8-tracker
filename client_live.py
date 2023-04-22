@@ -8,7 +8,7 @@ import json
 idx = input('Cam index: ')
 
 host = socket.gethostname()
-port = 10012
+port = 8000
 
 c = CustomSocket(host, port)
 c.clientConnect()
@@ -24,13 +24,13 @@ while cap.isOpened():
         print("Ignoring empty camera frame.")
         continue
 
-    cv2.imshow('client_cam', frame)
+    # cv2.imshow('client_cam', frame)
 
     # print("Send")
     msg = c.req(frame)
     print(msg)
 
-    if cv2.waitKey(1) == ord("q"):
-        cap.release()
+    # if cv2.waitKey(1) == ord("q"):
+    #     cap.release()
 
 cv2.destroyAllWindows()

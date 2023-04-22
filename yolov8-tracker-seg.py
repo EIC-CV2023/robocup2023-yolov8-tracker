@@ -21,6 +21,56 @@ DATASET_NAME = "coco"
 # DATASET_NAME = {0: "coke", 1: "milk", 2: "waterbottle"}
 
 
+def get_iou(bb1, bb2):
+    b1x1, b1y1, b1x2, b1y2 = bb1
+    b2x1, b2y1, b2x2, b2y2 = bb2
+    """
+    Calculate the Intersection over Union (IoU) of two bounding boxes.
+
+    Parameters
+    ----------
+    bb1 : dict
+        Keys: {'x1', 'x2', 'y1', 'y2'}
+        The (x1, y1) position is at the top left corner,
+        the (x2, y2) position is at the bottom right corner
+    bb2 : dict
+        Keys: {'x1', 'x2', 'y1', 'y2'}
+        The (x, y) position is at the top left corner,
+        the (x2, y2) position is at the bottom right corner
+
+    Returns
+    -------
+    float
+        in [0, 1]
+    """
+    assert b1x1 < b1x2
+    assert b1y1 < b1y2
+    assert b2x1 < b2x2
+    assert b2y1 < b2y2
+
+    # determine the coordinates of the intersection rectangle
+    x_left = max(b1x1, b2x1)
+    y_top = max(b1y1, b2y1)
+    x_right = min(b1x2, b2x2)
+    y_bottom = min(b1y2, b2y2)
+
+    if x_right < x_left or y_bottom < y_top:
+        return 0.0
+
+    # The intersection of two axis-aligned bounding boxes is always an
+    # axis-aligned bounding box
+    intersection_area = (x_right - x_left) * (y_bottom - y_top)
+
+    # compute the area of both AABBs
+    bb1_area = (b1x2 - b1x1) * (b1y2 - b1y1)
+    bb2_area = (b2x2 - b2x1) * (b2y2 - b2y1)
+    iou = intersection_area / \
+        float(bb1_area + bb2_area - intersection_area)
+    assert iou >= 0.0
+    assert iou <= 1.0
+    return iou
+
+
 class V8Tracker:
     def __init__(self, weight="yolov8s-seg.pt", conf=0.7, dataset_name="coco", sort_max_age=10, sort_min_hits=5, sort_iou_thresh=0.2, show_result=False):
         self.tracker = Sort(max_age=sort_max_age, min_hits=sort_min_hits,
@@ -55,6 +105,9 @@ class V8Tracker:
         self.frame = np.copy(frame)
         self.results = self.model.predict(
             source=self.frame, conf=self.conf, show=self.show_result)[0]
+
+        # print(self.results.masks)
+
         if self.results.boxes:
             # print(f"DETECT {len(results.boxes)}")
             output = dict()
@@ -71,18 +124,25 @@ class V8Tracker:
                                           np.array([x1, y1, x2, y2, conf, cls])))
             # print(dets_to_sort)
 
-            tracked_dets = self.tracker.update(dets_to_sort)
+            tracked_dets = self.tracker.update_seg(dets_to_sort)
             # print(tracked_dets)
             for tk in tracked_dets:
                 x1, y1, x2, y2 = (int(p) for p in tk[:4])
                 w, h = x2-x1, y2-y1
-                id = int(tk[8])
+                id = int(tk[8]) + 1
                 cls = tk[4]
                 name = self.datasets_names[cls]
                 self.draw_box(self.frame, (x1, y1, x2, y2), id, name)
                 self.res.append([id, cls, name, x1, y1, w, h])
 
-        return self.res, self.frame
+        if self.results.masks:
+            ret = list(zip(self.results.boxes, self.results.masks.data))
+        else:
+            ret = None
+
+        # print(self.results.masks)
+
+        return ret, self.res, self.frame
 
 
 def main():
@@ -94,7 +154,7 @@ def main():
     server.startServer()
 
     V8T = V8Tracker(weight=WEIGHT, dataset_name=DATASET_NAME,
-                    show_result=True)
+                    show_result=False)
 
     while True:
         conn, addr = server.sock.accept()
@@ -106,19 +166,36 @@ def main():
                 img = np.frombuffer(data, dtype=np.uint8).reshape(480, 640, 3)
                 # img = np.frombuffer(data, dtype=np.uint8).reshape(720, 1280, 3)
 
-                sol, drawn_frame = V8T.track(img)
+                yolores, sol, drawn_frame = V8T.track(img)
 
                 out = {}
-                obj = []
+                obj = {}
                 formatted_bbox = []
+
+                mask_frame = np.zeros(img.shape[:-1])
 
                 for s in sol:
                     id, cls, classname, x, y, w, h = s
-                    obj.append([id, cls, classname, x, y, w, h])
-                    formatted_bbox.append([classname, (x, y, w, h), False])
+
+                    if yolores:
+
+                        id_yolo = np.argmax([get_iou(
+                            (x, y, x+w, y+h), yoloobj[0].data.cpu().detach().numpy()[0][:4]) for yoloobj in yolores])
+
+                        mask = yolores[id_yolo][1].numpy()
+                        mask_frame += mask
+
+                        # obj.append([id, cls, classname, x, y, w, h])
+                        obj[id] = [cls, classname, x, y, w, h]
+                        formatted_bbox.append([classname, (x, y, w, h), False])
+
                 out["result"] = obj
                 out["n"] = len(obj)
-                print(out)
+                print(obj)
+
+                # mask is a 2D frame with a shape like the frame, value is the key pf the object in result.
+                out["mask"] = mask_frame.astype("int8").tolist()
+
                 server.sendMsg(conn, json.dumps(out, indent=4))
 
                 cv2.imshow("Result image", drawn_frame)
@@ -127,6 +204,7 @@ def main():
             except Exception as e:
                 print(e)
                 print("CONNECTION CLOSED")
+                cv2.destroyAllWindows()
                 break
         # server.stopServer()
 
