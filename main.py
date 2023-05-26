@@ -9,18 +9,18 @@ from random import randint
 from ultralytics.SORT import *
 
 
-model = YOLO("textdetv2.pt")
+model = YOLO("yolov8m-seg.pt")
 
 # For coco
-# with open("ultralytics/yolo/data/datasets/coco8-seg.yaml", "r") as stream:
-#     try:
-#         datasets = yaml.safe_load(stream)
-#         datasets_names = datasets['names']
-#     except:
-#         print("No file found")
-#         datasets_names = ""
+with open("ultralytics/yolo/data/datasets/coco8-seg.yaml", "r") as stream:
+    try:
+        datasets = yaml.safe_load(stream)
+        datasets_names = datasets['names']
+    except:
+        print("No file found")
+        datasets_names = ""
 
-datasets_names = {0: "text"}
+# datasets_names = {0: "text"}
 
 
 def init_tracker():
@@ -60,7 +60,7 @@ while cap.isOpened():
     start = time.time()
     frame2 = np.copy(frame)
 
-    results = model.predict(source=frame, conf=0.5, show=True)[0]
+    results = model.predict(source=frame, conf=0.7, show=True)[0]
     if results.boxes:
         # print(f"DETECT {len(results.boxes)}")
         output = dict()

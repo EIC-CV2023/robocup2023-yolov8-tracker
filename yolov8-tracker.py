@@ -103,8 +103,8 @@ def main():
             try:
                 data = server.recvMsg(conn)
                 # img = np.frombuffer(data, dtype=np.uint8).reshape(360, 640, 3)
-                img = np.frombuffer(data, dtype=np.uint8).reshape(480, 640, 3)
-                # img = np.frombuffer(data, dtype=np.uint8).reshape(720, 1280, 3)
+                # img = np.frombuffer(data, dtype=np.uint8).reshape(480, 640, 3)
+                img = np.frombuffer(data, dtype=np.uint8).reshape(720, 1280, 3)
 
                 sol, drawn_frame = V8T.track(img)
 

@@ -42,3 +42,4 @@ scikit-image
 # pycocotools>=2.0.6  # COCO mAP
 # roboflow
 filterpy
+ultralytics
