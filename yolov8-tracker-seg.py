@@ -113,8 +113,9 @@ class V8Tracker:
             output = dict()
             dets_to_sort = np.empty((0, 6))
 
-            for i, obj in enumerate(self.results.boxes):
-                x1, y1, x2, y2, conf, cls = obj.data.cpu().detach().numpy()[0]
+            for i, obj in enumerate(self.results.boxes.data.cpu().numpy()):
+                x1, y1, x2, y2, conf, cls = obj
+                # print("obj", obj)
                 name = self.datasets_names[int(
                     cls)] if self.datasets_names else 'unknown'
 
@@ -136,7 +137,8 @@ class V8Tracker:
                 self.res.append([id, cls, name, x1, y1, w, h])
 
         if self.results.masks:
-            ret = list(zip(self.results.boxes, self.results.masks.data))
+            ret = list(zip(self.results.boxes.data.cpu().numpy(), self.results.masks.data.cpu().numpy()))
+            # print("ret", ret)
         else:
             ret = None
 
@@ -180,10 +182,11 @@ def main():
                     if yolores:
 
                         id_yolo = np.argmax([get_iou(
-                            (x, y, x+w, y+h), yoloobj[0].data.cpu().detach().numpy()[0][:4]) for yoloobj in yolores])
+                            (x, y, x+w, y+h), yoloobj[0][:4]) for yoloobj in yolores])
 
-                        mask = yolores[id_yolo][1].numpy()
-                        mask_frame += mask
+                        mask = yolores[id_yolo][1]
+                        # print(np.sum(mask))
+                        mask_frame += mask * id
 
                         # obj.append([id, cls, classname, x, y, w, h])
                         obj[id] = [cls, classname, x, y, w, h]

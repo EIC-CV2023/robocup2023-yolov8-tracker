@@ -25,14 +25,17 @@ while cap.isOpened():
             # print(obj.xywhn)
             # print(obj.cls)
             # print(obj.conf)
-            print(obj.data)
+            # print(obj.data)
+            pass
+        print(results.boxes.data.cpu().numpy())
 
     if results.masks:
-        print(len(results.masks.segments))
-        for obj in results.masks.segments:
-            print(obj)
+        print(len(results.masks.xy))
+        for obj in results.masks.xy:
+            # print(obj)
             # print(obj.data)
-        print(results.masks.data)
+            pass
+        # print(results.masks.data.cpu().numpy())  # shape (n, h, w)
 
         # det = results.masks.data[0].numpy()
 

@@ -39,7 +39,17 @@ while cap.isOpened():
 
     # print("Send")
     msg = c.req(frame)
-    print(msg)
+    print(msg['result'])
+
+    mask_frame = np.array(msg['mask'])
+
+    mask_gray = cv2.normalize(src=mask_frame, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
+
+    cv2.imshow("mask", mask_gray)
+    # print(mask_frame.shape)
+    
+    
+
 
     if cv2.waitKey(1) == ord("q"):
         cap.release()
