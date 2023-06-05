@@ -5,6 +5,7 @@ import yaml
 import numpy as np
 import pyrealsense2 as rs
 from realsense import DepthCamera
+import json
 
 WEIGHT = "yolov8s-seg.pt"
 DATASET_NAME = "coco"
@@ -136,7 +137,7 @@ class V8Tracker:
             # print("count true:", np.count_nonzero(seg_mask))
 
             seg_pointcloud = pointcloud[seg_mask]
-            print(seg_pointcloud.shape)
+            # print(seg_pointcloud.shape)
 
             self.results[tracker_id] = {"name": obj_name,
                                         "box": box.xywh.numpy()[0],
@@ -158,13 +159,15 @@ while True:
     if not ret:
         print("Error")
 
-    
-
     yolo_result = model.track_get_pointcloud(color_frame, point_cloud)
 
-
     print(yolo_result)
-    
+
+    # Future Works
+    # json_result = json.dumps(yolo_result, indent=4)
+
+    # print(json_result)
+
     # print(color_frame.shape)
 
     cv2.putText(color_frame, "fps: " + str(round(1 / (time.time() - start), 2)), (10, int(color_frame.shape[0]) - 10),

@@ -1,0 +1,38 @@
+{   
+17: {
+    'name': 'person', 
+    'box': array([     506.97,      267.57,      263.46,      421.01], dtype=float32), 
+    'mask': array([[False, False, False, ..., False, False, False],
+        [False, False, False, ..., False, False, False],
+        [False, False, False, ..., False, False, False],
+        ...,
+        [False, False, False, ...,  True,  True,  True],
+        [False, False, False, ...,  True,  True,  True],
+        [False, False, False, ...,  True,  True,  True]]), 
+    'pointcloud': array([[549,  60, 277],
+        [550,  60, 277],
+        [551,  60, 277],
+        ...,
+        [637, 479,   0],
+        [638, 479,   0],
+        [639, 479,   0]])
+    }, 
+27: {
+    'name': 'bottle', 
+    'box': array([     77.555,      197.65,      53.923,      109.95], dtype=float32), 
+    'mask': array([[False, False, False, ..., False, False, False],
+        [False, False, False, ..., False, False, False],
+        [False, False, False, ..., False, False, False],
+        ...,
+        [False, False, False, ..., False, False, False],
+        [False, False, False, ..., False, False, False],
+        [False, False, False, ..., False, False, False]]), 
+    'pointcloud': array([[  53,  144, 1067],
+        [  54,  144, 1068],
+        [  55,  144, 1067],
+        ...,
+        [  95,  251,  900],
+        [  96,  251,  901],
+        [  97,  251,  901]])
+    }
+}

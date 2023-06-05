@@ -1,10 +1,12 @@
+import json
+import sys
 import numpy as np
+data = {
+    "name": [0,1,0,1,0,1,0,1]*10
+}
 
-l  = np.array(range(12,24)).reshape((2,2,3))
-print(l)
+json_data = json.dumps(data)
+byte_size = sys.getsizeof(json_data)
 
-t = np.array(((False,True),(True,False)))
+print("Size of JSON object in bytes:", byte_size)
 
-print(t)
-
-print(l[t])

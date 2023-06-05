@@ -6,25 +6,30 @@ from custom_socket import CustomSocket
 import json
 
 
-l=[]
-for c in range(10):
-    try:
-        ret, frame = cv2.VideoCapture(c).read()
+def list_available_cam(max_n):
+    list_cam = []
+    for n in range(max_n):
+        cap = cv2.VideoCapture(n)
+        ret, _ = cap.read()
 
-        if ret: 
-            l.append(c)
-    except:
-        pass
-print(l)
+        if ret:
+            list_cam.append(n)
+        cap.release()
+    
+    if len(list_cam) == 1:
+        return list_cam[0]
+    else:
+        print(list_cam)
+        return int(input("Cam index: "))
 
 
 host = socket.gethostname()
-port = 8000
+port = 9000
 
 c = CustomSocket(host, port)
 c.clientConnect()
 
-cap = cv2.VideoCapture(int(input("Cam index: ")))
+cap = cv2.VideoCapture(list_available_cam(10))
 cap.set(4, 480)
 cap.set(3, 640)
 
@@ -37,9 +42,14 @@ while cap.isOpened():
 
     # cv2.imshow('client_cam', frame)
 
-    # print("Send")
+
     msg = c.req(frame)
-    print(msg)
+    for obj_id in msg:
+        obj = msg[obj_id]
+        print(obj['name'])
+        print(obj['box'])
+        # print(obj['mask'])
+    # print(msg)
 
     if cv2.waitKey(1) == ord("q"):
         cap.release()
