@@ -44,11 +44,13 @@ while cap.isOpened():
 
 
     msg = c.req(frame)
+    
     for obj_id in msg:
         obj = msg[obj_id]
         print(obj['name'])
         print(obj['box'])
         # print(obj['mask'])
+
     # print(msg)
 
     if cv2.waitKey(1) == ord("q"):

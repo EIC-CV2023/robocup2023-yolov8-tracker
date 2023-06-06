@@ -2,7 +2,7 @@ import json
 import sys
 import numpy as np
 data = {
-    "name": [0,1,0,1,0,1,0,1]*10
+    "name": [0,1,0,1]*10
 }
 
 json_data = json.dumps(data)

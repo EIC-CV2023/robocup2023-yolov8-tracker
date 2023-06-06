@@ -5,13 +5,14 @@ import yaml
 import numpy as np
 import sys
 import os
-import yolov8_track
 import cv2
 from custom_socket import CustomSocket
 import socket
 import json
 import numpy as np
 import traceback
+
+from yolov8_track import V8Tracker
 
 WEIGHT = "yolov8s-seg.pt"
 DATASET_NAME = "coco"
@@ -40,16 +41,17 @@ def main():
         print("Client connected from", addr)
 
         start = time.time()
-        model = yolov8_track.V8Tracker(config=YOLOV8_CONFIG, weight=f"weight/{WEIGHT}", dataset_name="coco")
+        model = V8Tracker(config=YOLOV8_CONFIG, weight=f"weight/{WEIGHT}", dataset_name="coco")
 
         # Process frame received from client
         while True:
             res = dict()
             try:
                 data = server.recvMsg(conn, has_splitter=True)
-                # print(data)
+
                 frame_height, frame_width = int(data[0]), int(data[1])
                 # print(frame_height, frame_width)
+                
                 img = np.frombuffer(data[-1], dtype=np.uint8).reshape(frame_height, frame_width, 3)
 
                 res = model.track(img, socket_result=True)
