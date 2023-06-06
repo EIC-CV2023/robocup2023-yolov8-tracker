@@ -3,7 +3,13 @@ import cv2
 import time
 import numpy as np
 
+img = cv2.imread("group-photo.jpg")
+img = cv2.resize(img, (1440,780))
+
 model = YOLO("yolov8s-seg.pt")
+results = model.predict(source=img, conf=0.5, show=True)[0]
+cv2.imshow("i", img)
+cv2.waitKey()
 
 start = time.time()
 cap = cv2.VideoCapture(0)
