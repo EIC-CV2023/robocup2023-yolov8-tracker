@@ -60,7 +60,8 @@ class V8Tracker:
                               show=self.config["show"], 
                               persist=True, 
                               verbose=self.config["verbose"], 
-                              tracker=self.config["tracker"])[0]
+                              tracker=self.config["tracker"],
+                              imgsz=frame.shape[:-1])[0]
         
         self.results = dict()
 
@@ -75,7 +76,7 @@ class V8Tracker:
                 continue
 
             tracker_id = int(box.id.numpy()[0])
-            
+
             obj_class = int(box.cls.numpy()[0])
             obj_name = self.datasets_names[obj_class] if self.datasets_names else 'unknown'
 

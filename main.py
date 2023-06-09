@@ -53,6 +53,7 @@ def main():
                 # print(frame_height, frame_width)
                 
                 img = np.frombuffer(data[-1], dtype=np.uint8).reshape(frame_height, frame_width, 3)
+                # cv2.imwrite("save.jpg", img)
 
                 res = model.track(img, socket_result=True)
 

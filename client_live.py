@@ -22,6 +22,32 @@ def list_available_cam(max_n):
         print(list_cam)
         return int(input("Cam index: "))
 
+# def get_mask_frame(results, dim):
+#     mask_frame = np.zeros((dim[0], dim[1]))
+
+#     for obj_id in results:
+#         mask = np.reshape(results[obj_id]["mask"], dim).astype("int8")
+
+#         mask_frame += mask * int(obj_id)
+
+#     return mask_frame
+    
+    
+# def draw_mask_frame(mask_frame):
+#     return cv2.normalize(src=mask_frame, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
+
+def seg_frame(frame, results):
+    frame_dim = frame.shape[:-1]
+    blank = np.zeros((*frame_dim, 3), dtype="uint8")
+
+    for obj_id in results:
+        obj = results[obj_id]
+        mask = np.reshape(obj["mask"], frame_dim).astype(bool)
+        blank[mask] = frame[mask]
+
+    return blank
+
+
 
 host = socket.gethostname()
 port = 12301
@@ -30,8 +56,8 @@ c = CustomSocket(host, port)
 c.clientConnect()
 
 cap = cv2.VideoCapture(list_available_cam(10))
-cap.set(4, 480)
-cap.set(3, 640)
+
+DIM = (640, 480)
 
 while cap.isOpened():
 
@@ -40,16 +66,22 @@ while cap.isOpened():
         print("Ignoring empty camera frame.")
         continue
 
-    # cv2.imshow('client_cam', frame)
-
+    frame = cv2.resize(frame, DIM)
 
     msg = c.req(frame)
+
+    print(len(msg))
     
     for obj_id in msg:
         obj = msg[obj_id]
         print(obj['name'])
         print(obj['box'])
-        # print(obj['mask'])
+        print(len(obj['mask']))
+
+    seg_f = seg_frame(frame, msg)
+        
+    cv2.imshow("blank",seg_f)
+    cv2.imshow("frame", frame)
 
     # print(msg)
 
