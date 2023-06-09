@@ -24,7 +24,7 @@ def list_available_cam(max_n):
 
 
 host = socket.gethostname()
-port = 9000
+port = 12301
 
 c = CustomSocket(host, port)
 c.clientConnect()

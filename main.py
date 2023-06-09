@@ -21,14 +21,14 @@ DATASET_NAME = "coco"
 YOLOV8_CONFIG = {"tracker": "botsort.yaml",
                  "conf": 0.7,
                  "iou": 0.3,
-                 "show": True,
+                 "show": False,
                  "verbose": False}
 
 
 
 def main():
     HOST = socket.gethostname()
-    PORT = 9000
+    PORT = 12301
 
     server = CustomSocket(HOST, PORT)
     server.startServer()
