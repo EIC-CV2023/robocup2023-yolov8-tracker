@@ -25,7 +25,6 @@ YOLOV8_CONFIG = {"tracker": "botsort.yaml",
                  "verbose": False}
 
 
-
 def main():
     HOST = socket.gethostname()
     PORT = 12301
@@ -33,15 +32,14 @@ def main():
     server = CustomSocket(HOST, PORT)
     server.startServer()
 
-    
-
     while True:
         # Wait for connection from client :}
         conn, addr = server.sock.accept()
         print("Client connected from", addr)
 
         start = time.time()
-        model = V8Tracker(config=YOLOV8_CONFIG, weight=f"weight/{WEIGHT}", dataset_name="coco")
+        model = V8Tracker(config=YOLOV8_CONFIG,
+                          weight=f"weight/{WEIGHT}", dataset_name="coco")
 
         # Process frame received from client
         while True:
@@ -51,8 +49,9 @@ def main():
 
                 frame_height, frame_width = int(data[0]), int(data[1])
                 # print(frame_height, frame_width)
-                
-                img = np.frombuffer(data[-1], dtype=np.uint8).reshape(frame_height, frame_width, 3)
+
+                img = np.frombuffer(
+                    data[-1], dtype=np.uint8).reshape(frame_height, frame_width, 3)
                 # cv2.imwrite("save.jpg", img)
 
                 res = model.track(img, socket_result=True)
@@ -73,6 +72,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-    

@@ -41,5 +41,6 @@ scikit-image
 # albumentations>=1.0.3
 # pycocotools>=2.0.6  # COCO mAP
 # roboflow
+lap>=0.4
 filterpy
 ultralytics

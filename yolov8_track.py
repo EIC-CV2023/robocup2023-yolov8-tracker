@@ -15,7 +15,6 @@ YOLOV8_CONFIG = {"tracker": "botsort.yaml",
                  "verbose": False}
 
 
-
 def list_available_cam(max_n):
     list_cam = []
     for n in range(max_n):
@@ -25,7 +24,7 @@ def list_available_cam(max_n):
         if ret:
             list_cam.append(n)
         cap.release()
-    
+
     if len(list_cam) == 1:
         return list_cam[0]
     else:
@@ -34,7 +33,7 @@ def list_available_cam(max_n):
 
 
 class V8Tracker:
-    def __init__(self,config,weight="weight/yolov8s-seg.pt", dataset_name="coco"):
+    def __init__(self, config, weight="weight/yolov8s-seg.pt", dataset_name="coco"):
         self.config = config
         self.weight = weight
         self.model = YOLO(weight)
@@ -51,18 +50,17 @@ class V8Tracker:
             # In format of {0: name0, 1: name1, ...}
             self.datasets_names = dataset_name
 
-          
     def track(self, frame, socket_result=False):
         self.frame_height, self.frame_width = frame.shape[:-1]
-        track_results = self.model.track(source=frame, 
-                              conf=self.config["conf"], 
-                              iou=self.config["iou"], 
-                              show=self.config["show"], 
-                              persist=True, 
-                              verbose=self.config["verbose"], 
-                              tracker=self.config["tracker"],
-                              imgsz=frame.shape[:-1])[0]
-        
+        track_results = self.model.track(source=frame,
+                                         conf=self.config["conf"],
+                                         iou=self.config["iou"],
+                                         show=self.config["show"],
+                                         persist=True,
+                                         verbose=self.config["verbose"],
+                                         tracker=self.config["tracker"],
+                                         imgsz=frame.shape[:-1])[0]
+
         self.results = dict()
 
         if not track_results:
@@ -91,7 +89,7 @@ class V8Tracker:
                                             "mask": mask.data.cpu().numpy()[0].ravel().astype("uint8").tolist()}
 
         return self.results
-    
+
     def get_mask_frame(self):
         mask_frame = np.zeros((self.frame_height, self.frame_width))
 
@@ -101,11 +99,9 @@ class V8Tracker:
             mask_frame += mask * obj_id
 
         return mask_frame
-        
-        
+
     def draw_mask_frame(self):
         return cv2.normalize(src=self.get_mask_frame(), dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
-
 
 
 def main():
@@ -115,8 +111,8 @@ def main():
 
     start = time.time()
 
-    model = V8Tracker(config=YOLOV8_CONFIG, weight=f"weight/{WEIGHT}", dataset_name="coco")
-
+    model = V8Tracker(config=YOLOV8_CONFIG,
+                      weight=f"weight/{WEIGHT}", dataset_name="coco")
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -125,11 +121,10 @@ def main():
             print("Error")
 
         cv2.putText(frame, "fps: " + str(round(1 / (time.time() - start), 2)), (10, int(cap.get(4)) - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        start = time.time() 
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        start = time.time()
 
         yolo_result = model.track(frame, socket_result=True)
-
 
         print(yolo_result)
         print(frame.shape)
@@ -146,7 +141,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    
-
-
