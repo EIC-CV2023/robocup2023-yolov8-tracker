@@ -67,16 +67,19 @@ while cap.isOpened():
         continue
 
     frame = cv2.resize(frame, DIM)
-
+    
+    # send image through request and 
     msg = c.req(frame)
 
     print(len(msg))
     
-    for obj_id in msg:
+
+    # print out all the object detected in the frame.
+    for i, obj_id in enumerate(msg):
         obj = msg[obj_id]
-        print(obj['name'])
-        print(obj['box'])
-        print(len(obj['mask']))
+        print(f"[{i}][{obj['name']}]")
+        print(f"[{i}][{obj['box']}]")
+        print(f"[{i}][{len(obj['mask'])}]")
 
     seg_f = seg_frame(frame, msg)
         
