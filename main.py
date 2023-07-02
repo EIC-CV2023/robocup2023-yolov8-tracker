@@ -44,21 +44,21 @@ def main():
         # Process frame received from client
         while True:
             res = dict()
+            msg = {"res": res}
             try:
-                data = server.recvMsg(conn, has_splitter=True)
+                data = server.recvMsg(
+                    conn, has_splitter=True)
+                frame_height, frame_width, frame = data
 
-                frame_height, frame_width = int(data[0]), int(data[1])
-                # print(frame_height, frame_width)
+                msg["camera_info"] = [frame_width, frame_height]
 
-                img = np.frombuffer(
-                    data[-1], dtype=np.uint8).reshape(frame_height, frame_width, 3)
-                # cv2.imwrite("save.jpg", img)
+                yolo_res = model.track(frame, socket_result=True)
 
-                res = model.track(img, socket_result=True)
+                msg["res"] = yolo_res
 
                 # Send back result
                 # print(res)
-                server.sendMsg(conn, json.dumps(res))
+                server.sendMsg(conn, json.dumps(msg))
 
             except Exception as e:
                 traceback.print_exc()
