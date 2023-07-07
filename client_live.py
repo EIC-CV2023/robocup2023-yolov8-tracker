@@ -69,7 +69,7 @@ while cap.isOpened():
     frame = cv2.resize(frame, DIM)
     
     # send image through request and 
-    msg = c.req(frame)
+    msg = c.req(frame).get('res')
 
     print(len(msg))
     
