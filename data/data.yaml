@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 40
+names: ['apple', 'banana', 'baseball', 'bowl', 'cheezit', 'chocolate_cornflakes', 'chocolate_jello', 'cleanser', 'coffee_grounds', 'cola', 'cornflakes', 'cup', 'dice', 'fork', 'iced_tea', 'juice_pack', 'knife', 'lemon', 'milk', 'mustard', 'orange', 'orange_juice', 'peach', 'pear', 'plate', 'plum', 'pringles', 'red_wine', 'rubiks_cube', 'soccer_ball', 'spam', 'sponge', 'spoon', 'strawberry', 'strawberry_jello', 'sugar', 'tennis_ball', 'tomato_soup', 'tropical_juice', 'tuna']
+
+roboflow:
+  workspace: rbc2023
+  project: dday
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/rbc2023/dday/dataset/2
